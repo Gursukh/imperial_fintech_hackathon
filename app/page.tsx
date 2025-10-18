@@ -11,6 +11,7 @@ import HistoryPanel from "./windows/history";
 import HelpPanel from "./windows/help";
 import SettingsPanel from "./windows/settings";
 import LogoutPanel from "./windows/logout";
+import HomePage from "./windows/home";
 
 export default function Home() {
   const [selected, setSelected] = useState<string>("escrows");
@@ -44,6 +45,7 @@ export default function Home() {
 
       <div className=" h-full">
         {/* Right-hand panel area */}
+        {selected === "home" && <HomePage />}
         {selected === "create" && <CreatePanel />}
         {selected === "escrows" && <EscrowPanel />}
         {selected === "analytics" && <AnalyticsPanel />}
