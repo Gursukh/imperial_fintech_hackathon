@@ -1,103 +1,58 @@
+"use client";
+
+
 import Image from "next/image";
+import { useState } from "react";
+import MenuButton from "../components/MenuButton";
+import CreatePanel from "./windows/create";
+import InboundPanel from "./windows/inbound";
+import AnalyticsPanel from "./windows/analytics";
+import HistoryPanel from "./windows/history";
+import HelpPanel from "./windows/help";
+import SettingsPanel from "./windows/settings";
+import LogoutPanel from "./windows/logout";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [selected, setSelected] = useState<string>("create");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleSelect = (id: string) => setSelected(id);
+
+  return (
+
+    <main className="w-screen h-screen flex">
+
+      <div className="h-full w-full max-w-[350px] bg-foreground p-8 px-4 flex flex-col">
+        <div className="flex gap-4 items-center mb-12">
+
+          <Image src="ship.svg" alt="InShore Logo" width={40} height={40} />
+          <h1 className="text-white text-4xl font-black ">InShore</h1>
+
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        <p className="text-background mb-4 text-xl font-black">MENU</p>
+        <MenuButton id="home" label="Home" src="house-chimney.svg" selected={selected === "home"} onClick={handleSelect} />
+        <MenuButton id="create" label="Create" src="add.svg" selected={selected === "create"} onClick={handleSelect} />
+        <MenuButton id="escrows" label="Active Escrows" src="document-signed.svg" selected={selected === "escrows"} onClick={handleSelect} />
+        <MenuButton id="analytics" label="Analytics" src="stats.svg" selected={selected === "analytics"} onClick={handleSelect} />
+        <MenuButton id="history" label="History" src="time-past.svg" selected={selected === "history"} onClick={handleSelect} />
+        <div className="mt-auto" />
+        <MenuButton id="help" label="Help" src="stats.svg" selected={selected === "help"} onClick={handleSelect} />
+        <MenuButton id="settings" label="Settings" src="time-past.svg" selected={selected === "settings"} onClick={handleSelect} />
+        <MenuButton id="logout" label="Logout" src="time-past.svg" selected={selected === "logout"} onClick={handleSelect} />
+
+      </div>
+
+      <div className="w-full h-full p-4">
+        {/* Right-hand panel area */}
+        {selected === "create" && <CreatePanel />}
+        {selected === "escrows" && <InboundPanel />}
+        {selected === "analytics" && <AnalyticsPanel />}
+        {selected === "history" && <HistoryPanel />}
+        {selected === "help" && <HelpPanel />}
+        {selected === "settings" && <SettingsPanel />}
+        {selected === "logout" && <LogoutPanel />}
+      </div>
+
+    </main>
   );
 }
