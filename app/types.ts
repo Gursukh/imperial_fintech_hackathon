@@ -5,11 +5,12 @@ export type Currency = string // e.g. 'USD', 'EUR', 'GBP'
 
 // Allowed escrow status values
 export type EscrowStatus =
-	| 'pending'
-	| 'active'
-	| 'completed'
+	| 'draft'
+	| 'pending signature'
+	| 'pending payment'
+	| 'pending shipment'
+	| 'funds available'
 	| 'expired'
-	| 'cancelled'
 
 export type Escrow = {
 	// Human-readable name for the escrow

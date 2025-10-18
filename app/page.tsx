@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import MenuButton from "../components/MenuButton";
 import CreatePanel from "./windows/create";
-import InboundPanel from "./windows/inbound";
+import EscrowPanel from "./windows/escrow";
 import AnalyticsPanel from "./windows/analytics";
 import HistoryPanel from "./windows/history";
 import HelpPanel from "./windows/help";
@@ -13,15 +13,15 @@ import SettingsPanel from "./windows/settings";
 import LogoutPanel from "./windows/logout";
 
 export default function Home() {
-  const [selected, setSelected] = useState<string>("create");
+  const [selected, setSelected] = useState<string>("escrows");
 
   const handleSelect = (id: string) => setSelected(id);
 
   return (
 
-    <main className="w-screen h-screen flex">
+    <main className="w-screen h-screen grid grid-cols-[350px_auto] ">
 
-      <div className="h-full w-full max-w-[350px] bg-foreground p-8 px-4 flex flex-col">
+      <div className="h-full min-w-[350px] w-[350px] bg-foreground p-8 px-4 flex flex-col">
         <div className="flex gap-4 items-center mb-12">
 
           <Image src="ship.svg" alt="InShore Logo" width={40} height={40} />
@@ -42,10 +42,10 @@ export default function Home() {
 
       </div>
 
-      <div className="w-full h-full p-4">
+      <div className=" h-full p-4">
         {/* Right-hand panel area */}
         {selected === "create" && <CreatePanel />}
-        {selected === "escrows" && <InboundPanel />}
+        {selected === "escrows" && <EscrowPanel />}
         {selected === "analytics" && <AnalyticsPanel />}
         {selected === "history" && <HistoryPanel />}
         {selected === "help" && <HelpPanel />}

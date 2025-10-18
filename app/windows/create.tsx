@@ -76,7 +76,7 @@ export default function CreatePanel() {
             // if vault usage is disabled, ensure the escrow has no vault address
             vaultAddress: useVault ? (form.vaultAddress ?? null) : null,
             dateOfExpiry: (form.dateOfExpiry as string) || new Date().toISOString(),
-            status: (form.status as any) || "pending",
+            status: (form.status as any) || "pending signature",
             invoiceNumber: invoice,
             dateCreated: form.dateCreated || new Date().toISOString(),
             dateUpdated: new Date().toISOString(),
