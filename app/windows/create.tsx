@@ -31,7 +31,6 @@ export default function CreatePanel() {
         invoiceNumber: "",
         dateCreated: new Date().toISOString(),
         dateUpdated: new Date().toISOString(),
-        lastUpdatedBy: "",
     });
 
     const update = <K extends keyof EscrowType>(k: K, v: EscrowType[K]) =>
@@ -39,6 +38,9 @@ export default function CreatePanel() {
 
     // whether user wants to use/enable a vault address for this escrow
     const [useVault, setUseVault] = useState<boolean>(false);
+    
+    // message to display below buttons
+    const [message, setMessage] = useState<{ text: string; type: "error" | "success" } | null>(null);
 
     const handleSubmit: React.FormEventHandler = (e) => {
         e.preventDefault();
@@ -57,7 +59,7 @@ export default function CreatePanel() {
         for (const k of requiredKeys) {
             const val = (form as any)[k];
             if (val === undefined || val === null || val === "" || (k === "currencyAmount" && Number(val) === 0)) {
-                alert(`Please fill the required field: ${k}`);
+                setMessage({ text: `Please fill the required field: ${k}`, type: "error" });
                 return;
             }
         }
@@ -80,11 +82,10 @@ export default function CreatePanel() {
             invoiceNumber: invoice,
             dateCreated: form.dateCreated || new Date().toISOString(),
             dateUpdated: new Date().toISOString(),
-            lastUpdatedBy: form.lastUpdatedBy ?? null,
         };
 
         addEscrow(escrow);
-        alert("Escrow created: " + invoice);
+        setMessage({ text: `Escrow created: ${invoice}`, type: "success" });
 
         // reset
         setForm({
@@ -101,7 +102,6 @@ export default function CreatePanel() {
             invoiceNumber: "",
             dateCreated: new Date().toISOString(),
             dateUpdated: new Date().toISOString(),
-            lastUpdatedBy: "",
         });
         // reset vault usage checkbox
         setUseVault(false);
@@ -109,7 +109,7 @@ export default function CreatePanel() {
 
     return (
         <div className="h-full rounded-2xl p-8 overflow-auto">
-            <h1 className="text-4xl font-black mb-6">Create An Escrow</h1>
+            <h1 className="text-4xl font-black mb-6 h-8">Create An Escrow</h1>
 
             <form onSubmit={handleSubmit} className={formGrid}>
                 <div className={boxWrapper}>
@@ -219,10 +219,16 @@ export default function CreatePanel() {
                             invoiceNumber: "",
                             dateCreated: new Date().toISOString(),
                             dateUpdated: new Date().toISOString(),
-                            lastUpdatedBy: "",
                         })
+                        setMessage(null);
                     }} className={mutedButton}>Reset</button>
                 </div>
+                
+                {message && (
+                    <div className={`col-span-2 mt-4 p-4 rounded-lg ${message.type === "error" ? "bg-red-100 text-red-800 border border-red-300" : "bg-green-100 text-green-800 border border-green-300"}`}>
+                        {message.text}
+                    </div>
+                )}
             </form>
         </div>
     );

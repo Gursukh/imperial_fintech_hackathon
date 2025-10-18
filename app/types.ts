@@ -11,6 +11,7 @@ export type EscrowStatus =
 	| 'pending shipment'
 	| 'funds available'
 	| 'expired'
+	| 'cancelled'
 
 export type Escrow = {
 	// Human-readable name for the escrow
@@ -48,9 +49,6 @@ export type Escrow = {
 	// Audit timestamps
 	dateCreated: string // ISO 8601
 	dateUpdated?: string // ISO 8601
-
-	// The last user or system actor who updated the escrow
-	lastUpdatedBy?: string | null
 }
 
 export default Escrow

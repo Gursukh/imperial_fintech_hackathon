@@ -36,13 +36,13 @@ export default function Home() {
         <MenuButton id="analytics" label="Analytics" src="stats.svg" selected={selected === "analytics"} onClick={handleSelect} />
         <MenuButton id="history" label="History" src="time-past.svg" selected={selected === "history"} onClick={handleSelect} />
         <div className="mt-auto" />
-        <MenuButton id="help" label="Help" src="stats.svg" selected={selected === "help"} onClick={handleSelect} />
-        <MenuButton id="settings" label="Settings" src="time-past.svg" selected={selected === "settings"} onClick={handleSelect} />
-        <MenuButton id="logout" label="Logout" src="time-past.svg" selected={selected === "logout"} onClick={handleSelect} />
+        <MenuButton id="help" label="Help" src="interrogation.svg" selected={selected === "help"} onClick={handleSelect} />
+        <MenuButton id="settings" label="Settings" src="gears.svg" selected={selected === "settings"} onClick={handleSelect} />
+        <MenuButton id="logout" label="Logout" src="sign-out-alt.svg" selected={selected === "logout"} onClick={handleSelect} />
 
       </div>
 
-      <div className=" h-full p-4">
+      <div className=" h-full">
         {/* Right-hand panel area */}
         {selected === "create" && <CreatePanel />}
         {selected === "escrows" && <EscrowPanel />}

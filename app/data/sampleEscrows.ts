@@ -17,7 +17,6 @@ const sampleEscrows: Escrow[] = [
     vaultAddress: null,
     dateCreated: "2025-10-01T10:12:00.000Z",
     dateUpdated: "2025-10-12T09:45:00.000Z",
-    lastUpdatedBy: "ops@buyerco.com",
   },
   {
     name: "Refined Sugar Lot 12",
@@ -34,7 +33,6 @@ const sampleEscrows: Escrow[] = [
     vaultAddress: "0xA1b2c3D4e5F6a7B8C9d0E1F2A3B4C5D6E7F8a9B0",
     dateCreated: "2025-09-25T14:20:00.000Z",
     dateUpdated: "2025-10-10T16:05:00.000Z",
-    lastUpdatedBy: "finance@seller.com",
   },
   {
     name: "Machinery Spare Parts",
@@ -51,7 +49,6 @@ const sampleEscrows: Escrow[] = [
     vaultAddress: null,
     dateCreated: "2025-10-05T08:30:00.000Z",
     dateUpdated: "2025-10-13T11:10:00.000Z",
-    lastUpdatedBy: "logistics@buyerco.com",
   },
   {
     name: "Textiles Autumn Collection",
@@ -68,7 +65,6 @@ const sampleEscrows: Escrow[] = [
     vaultAddress: "0x0F1e2D3c4B5a6978C9d0eF1A2B3C4D5E6F7a8B9C",
     dateCreated: "2025-09-02T12:00:00.000Z",
     dateUpdated: "2025-10-15T17:42:00.000Z",
-    lastUpdatedBy: "system",
   },
   {
     name: "Green Coffee Beans Lot 7",
@@ -85,7 +81,6 @@ const sampleEscrows: Escrow[] = [
     vaultAddress: null,
     dateCreated: "2025-08-10T09:05:00.000Z",
     dateUpdated: "2025-09-29T15:25:00.000Z",
-    lastUpdatedBy: "system",
   },
   {
     name: "Aluminum Sheets",
@@ -102,7 +97,6 @@ const sampleEscrows: Escrow[] = [
     vaultAddress: null,
     dateCreated: "2025-10-16T10:00:00.000Z",
     dateUpdated: "2025-10-16T10:00:00.000Z",
-    lastUpdatedBy: "alex@eurometals.com",
   },
 ];
 

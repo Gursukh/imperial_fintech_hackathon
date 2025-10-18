@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
 
     MaterialReactTable,
@@ -12,19 +12,20 @@ import {
 } from 'material-react-table';
 import { useEscrows } from "../context/escrow";
 import type { Escrow } from "../types";
+import { pendingActionsMap } from "../data/pendingActionsMap";
 
 export default function EscrowPanel() {
-    const { escrows } = useEscrows();
+    const { escrows, archiveEscrow, updateEscrow } = useEscrows();
 
     // local state for switch selection
     const [selectedView, setSelectedView] = useState<"imports" | "exports">("imports");
+    // local state for row selection (track by invoiceNumber if available, else MRT row.id)
+    const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
     // statuses shown for imports (others go to exports)
     const importStatusSet = useMemo(() => new Set([
         "pending signature",
-        // treat "pending delivery" synonymously with our data's "pending shipment"
-        "pending shipment",
-        "pending delivery",
+        "pending payment",
     ]), []);
 
     const pad = (n: number) => n.toString().padStart(2, "0");
@@ -72,7 +73,7 @@ export default function EscrowPanel() {
                         case "pending shipment":
                         case "pending payment": return (
                             <span
-                                style={{ ...style, backgroundColor: '#222' }}
+                                style={{ ...style, backgroundColor: 'blue' }}
                             >
                                 {status}
                             </span>
@@ -87,6 +88,13 @@ export default function EscrowPanel() {
                         case "expired": return (
                             <span
                                 style={{ ...style, backgroundColor: 'red' }}
+                            >
+                                {status}
+                            </span>
+                        );
+                        case "cancelled": return (
+                            <span
+                                style={{ ...style, backgroundColor: '#666' }}
                             >
                                 {status}
                             </span>
@@ -132,7 +140,7 @@ export default function EscrowPanel() {
                     const d = cell.getValue<Date>();
                     return formatDateTime(d);
                 },
-                size: 160,
+                size: 180,
             },
             {
                 id: "updated",
@@ -157,11 +165,50 @@ export default function EscrowPanel() {
         });
     }, [escrows, importStatusSet, selectedView]);
 
+    // clear selection if switching views or the selected item no longer exists in filtered data
+    useEffect(() => {
+        if (!selectedRowId) return;
+        const stillExists = filteredEscrows.some(
+            (e, idx) => (e.invoiceNumber ?? String(idx)) === selectedRowId,
+        );
+        if (!stillExists) setSelectedRowId(null);
+    }, [filteredEscrows, selectedRowId]);
+
     const table = useMaterialReactTable<Escrow>({
         columns,
         data: filteredEscrows,
         enableStickyHeader: true,
         enableDensityToggle: false,
+        // make table rows clickable and highlight on selection
+        muiTableBodyRowProps: ({ row }) => {
+            const rowId = (row.original.invoiceNumber ?? row.id) as string;
+            const isSelected = selectedRowId === rowId;
+            return {
+                onClick: (e: React.MouseEvent) => {
+                    // prevent container click-away handler from firing
+                    e.stopPropagation();
+                    setSelectedRowId((prev) => (prev === rowId ? null : rowId));
+                },
+                role: 'button',
+                tabIndex: 0,
+                onKeyDown: (e: React.KeyboardEvent) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        // prevent container click-away handler from firing
+                        e.stopPropagation();
+                        setSelectedRowId((prev) => (prev === rowId ? null : rowId));
+                    }
+                },
+                sx: {
+                    cursor: 'pointer',
+                    transition: 'background-color 200ms ease',
+                    backgroundColor: isSelected ? 'rgba(0,0,0,0.06)' : undefined,
+                    '&:hover': {
+                        backgroundColor: isSelected ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.03)',
+                    },
+                },
+            };
+        },
         muiTableHeadCellProps: {
             sx: {
                 fontWeight: 'bold',
@@ -187,12 +234,57 @@ export default function EscrowPanel() {
             pagination: { pageIndex: 0, pageSize: 10 },
             sorting: [{ id: "updated", desc: true }],
         },
-        muiTableContainerProps: { sx: { height: '100%', flex: '1 1 auto' } },
+        muiTableContainerProps: {
+            sx: { height: '100%', flex: '1 1 auto' },
+            className: "no-scrollbar",
+            onClick: () => {
+                // click-away inside table container but not on a row -> clear selection
+                if (selectedRowId) setSelectedRowId(null);
+            },
+        },
     });
 
+    // Find the selected escrow details
+    const selectedEscrow = useMemo<Escrow>(() => {
+        if (!selectedRowId) return {
+            invoiceNumber: '',
+            name: '',
+            status: "draft",
+            counterparty: '',
+            currencyAmount: 0,
+            currency: '',
+            portOfLoading: '',
+            portOfDischarge: '',
+            finalDestination: '',
+            proofOfShipment: '',
+            dateCreated: '',
+            dateUpdated: '',
+            dateOfExpiry: '',
+            vaultAddress: '',
+        };
+        return filteredEscrows.find(
+            (e, idx) => (e.invoiceNumber ?? String(idx)) === selectedRowId
+        ) || {
+            invoiceNumber: '',
+            name: '',
+            status: "draft",
+            counterparty: '',
+            currencyAmount: 0,
+            currency: '',
+            portOfLoading: '',
+            portOfDischarge: '',
+            finalDestination: '',
+            proofOfShipment: '',
+            dateCreated: '',
+            dateUpdated: '',
+            dateOfExpiry: '',
+            vaultAddress: '',
+        };
+    }, [selectedRowId, filteredEscrows]);
+
     return (
-        <div className="h-full rounded-2xl p-8 overflow-hidden w-auto flex flex-col">
-            <div className="flex justify-between items-center mb-6">
+        <div className="relative h-full p-8 w-auto flex flex-col overflow-hidden">
+            <div className="flex justify-between items-center mb-6 h-8">
 
                 <h1 className="text-4xl font-black ">Available Escrows</h1>
                 <div
@@ -229,10 +321,166 @@ export default function EscrowPanel() {
                     </button>
                 </div>
             </div>
-            <div className="bg-white rounded-2xl overflow-hidden shadow-md flex-grow flex flex-col min-h-0">
+            <div className="relative flex-grow min-h-0 ">
+                {/* Main Table Panel */}
+                <div
+                    className="absolute bg-white rounded-2xl overflow-hidden shadow-md flex flex-col"
+                    style={{
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        width: selectedRowId ? 'calc(50% - 0.5rem)' : '100%',
+                        transform: selectedRowId ? 'translateX(0)' : 'translateX(0)',
+                        transition: 'width 300ms ease, transform 300ms ease',
+                    }}
+                >
+                    <MaterialReactTable table={table} />
+                </div>
 
-                <MaterialReactTable table={table} />
+                {/* Details Panel */}
+                <div
+                    className="absolute bg-white rounded-2xl shadow-md p-6 overflow-auto no-scrollbar flex flex-col"
+                    style={{
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        width: 'calc(50% - 0.5rem)',
+                        transform: selectedRowId ? 'translateX(0)' : 'translateX(calc(100% + 1rem))',
+                        transition: 'transform 300ms ease',
+                        opacity: selectedRowId ? 1 : 0,
+                        pointerEvents: selectedRowId ? 'auto' : 'none',
+                    }}
+                >
+                    <div className="flex justify-between items-start mb-4">
+                        <h2 className="text-2xl font-bold">Escrow Details</h2>
+                        <button
+                            onClick={() => setSelectedRowId(null)}
+                            className="text-gray-500 hover:text-gray-700 text-2xl leading-none cursor-pointer"
+                            aria-label="Close details"
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    <div className="space-y-4 mb-4">
+                        <div className=" [&>*:nth-child(even)]:bg-gray-100">
+
+                            <DetailField label="Invoice Number" value={selectedEscrow.invoiceNumber || '-'} />
+                            <DetailField label="Escrow Name" value={selectedEscrow.name} />
+                            <DetailField label="Status" value={selectedEscrow.status} />
+                            <DetailField label="Counterparty" value={selectedEscrow.counterparty} />
+
+                            <DetailField
+                                label="Amount"
+                                value={(() => {
+                                    try {
+                                        return new Intl.NumberFormat(undefined, {
+                                            style: "currency",
+                                            currency: selectedEscrow.currency,
+                                            maximumFractionDigits: 2,
+                                        }).format(selectedEscrow.currencyAmount);
+                                    } catch {
+                                        return `${selectedEscrow.currencyAmount} ${selectedEscrow.currency}`;
+                                    }
+                                })()}
+                            />
+                        </div>
+
+                        <div className="border-t pt-4 [&>*:nth-child(even)]:bg-gray-100">
+                            <h3 className="font-semibold text-lg mb-3">Shipping Information</h3>
+                            <DetailField label="Port of Loading" value={selectedEscrow.portOfLoading} />
+                            <DetailField label="Port of Discharge" value={selectedEscrow.portOfDischarge} />
+                            <DetailField label="Final Destination" value={selectedEscrow.finalDestination} />
+                            <DetailField label="Proof of Shipment" value={selectedEscrow.proofOfShipment || '-'} />
+                        </div>
+
+                        <div className="border-t pt-4 [&>*:nth-child(even)]:bg-gray-100" >
+                            <h3 className="font-semibold text-lg mb-3">Dates</h3>
+                            <DetailField label="Date Created" value={formatDateTime(new Date(selectedEscrow.dateCreated))} />
+                            <DetailField
+                                label="Date Updated"
+                                value={selectedEscrow.dateUpdated ? formatDateTime(new Date(selectedEscrow.dateUpdated)) : '-'}
+                            />
+                            <DetailField label="Date of Expiry" value={formatDateTime(new Date(selectedEscrow.dateOfExpiry))} />
+                        </div>
+
+                        <div className="border-t pt-4">
+                            <h3 className="font-semibold text-lg mb-3">Additional Information</h3>
+                            <DetailField label="Vault Address" value={selectedEscrow.vaultAddress || '-'} />
+                        </div>
+                    </div>
+                    <h2 className="text-2xl font-bold mt-8 capitalize">{`Pending Actions - ${selectedEscrow.status}`}</h2>
+                    {selectedEscrow.status && pendingActionsMap[selectedEscrow.status] && (
+                        <div className="mt-4 flex-grow flex flex-col ">
+                            <p className="text-gray-700 mb-4">{pendingActionsMap[selectedEscrow.status].description}</p>
+                            <div className="grid grid-cols-[1fr_1fr] gap-4 text-xl mt-auto ">
+                                {pendingActionsMap[selectedEscrow.status].actions({
+                                    onArchiveEscrow: () => {
+                                        if (selectedEscrow.invoiceNumber) {
+                                            archiveEscrow(selectedEscrow.invoiceNumber);
+                                            setSelectedRowId(null);
+                                        }
+                                    },
+                                    onCancelEscrow: () => {
+                                        if (selectedEscrow.invoiceNumber) {
+                                            updateEscrow(selectedEscrow.invoiceNumber, { 
+                                                status: "cancelled",
+                                                dateUpdated: new Date().toISOString()
+                                            });
+                                            // Archive the cancelled escrow
+                                            setTimeout(() => {
+                                                archiveEscrow(selectedEscrow.invoiceNumber!);
+                                                setSelectedRowId(null);
+                                            }, 500);
+                                        }
+                                    },
+                                    onSignEscrow: () => {
+                                        if (selectedEscrow.invoiceNumber) {
+                                            updateEscrow(selectedEscrow.invoiceNumber, { 
+                                                status: "pending payment",
+                                                dateUpdated: new Date().toISOString()
+                                            });
+                                        }
+                                    },
+                                    onDepositFunds: () => {
+                                        if (selectedEscrow.invoiceNumber) {
+                                            updateEscrow(selectedEscrow.invoiceNumber, { 
+                                                status: "pending shipment",
+                                                dateUpdated: new Date().toISOString()
+                                            });
+                                        }
+                                    },
+                                    onUploadProofOfShipment: () => {
+                                        if (selectedEscrow.invoiceNumber) {
+                                            updateEscrow(selectedEscrow.invoiceNumber, { 
+                                                status: "funds available",
+                                                dateUpdated: new Date().toISOString()
+                                            });
+                                        }
+                                    },
+                                    onWithdrawFunds: () => {
+                                        if (selectedEscrow.invoiceNumber) {
+                                            // Archive the escrow after funds are withdrawn
+                                            archiveEscrow(selectedEscrow.invoiceNumber);
+                                            setSelectedRowId(null);
+                                        }
+                                    }
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
+        </div>
+    );
+}
+
+// Helper component for displaying detail fields
+function DetailField({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="grid grid-cols-[200px_auto] ">
+            <dt className="text-sm font-medium text-gray-600 mb-1">{label}</dt>
+            <dd className="text-base text-gray-900 break-words">{value}</dd>
         </div>
     );
 }
