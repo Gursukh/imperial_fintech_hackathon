@@ -73,21 +73,21 @@ export default function EscrowPanel() {
                         case "pending shipment":
                         case "pending payment": return (
                             <span
-                                style={{ ...style, backgroundColor: 'blue' }}
+                                style={{ ...style, backgroundColor: '#0417B2' }}
                             >
                                 {status}
                             </span>
                         );
                         case "funds available": return (
                             <span
-                                style={{ ...style, backgroundColor: 'green' }}
+                                style={{ ...style, backgroundColor: '#0C9461' }}
                             >
                                 {status}
                             </span>
                         );
                         case "expired": return (
                             <span
-                                style={{ ...style, backgroundColor: 'red' }}
+                                style={{ ...style, backgroundColor: 'rgb(239, 68, 68)' }}
                             >
                                 {status}
                             </span>
@@ -286,7 +286,7 @@ export default function EscrowPanel() {
         <div className="relative h-full p-8 w-auto flex flex-col overflow-hidden">
             <div className="flex justify-between items-center mb-6 h-8">
 
-                <h1 className="text-4xl font-black ">Available Escrows</h1>
+                <h1 className="text-4xl font-black ">Active Escrows</h1>
                 <div
                     role="tablist"
                     aria-label="Switch View"
@@ -331,7 +331,7 @@ export default function EscrowPanel() {
                         bottom: 0,
                         width: selectedRowId ? 'calc(50% - 0.5rem)' : '100%',
                         transform: selectedRowId ? 'translateX(0)' : 'translateX(0)',
-                        transition: 'width 300ms ease, transform 300ms ease',
+                        transition: 'width 500ms ease, transform 500ms ease',
                     }}
                 >
                     <MaterialReactTable table={table} />
@@ -346,7 +346,7 @@ export default function EscrowPanel() {
                         bottom: 0,
                         width: 'calc(50% - 0.5rem)',
                         transform: selectedRowId ? 'translateX(0)' : 'translateX(calc(100% + 1rem))',
-                        transition: 'transform 300ms ease',
+                        transition: 'transform 500ms ease',
                         opacity: selectedRowId ? 1 : 0,
                         pointerEvents: selectedRowId ? 'auto' : 'none',
                     }}

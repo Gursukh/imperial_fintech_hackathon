@@ -45,42 +45,42 @@ export function EscrowProvider({ children }: { children: React.ReactNode }) {
   }, [STORAGE_KEY]);
 
   // Load archived escrows from storage
-  useEffect(() => {
-    try {
-      const raw = typeof window !== "undefined" ? window.localStorage.getItem(ARCHIVED_STORAGE_KEY) : null;
-      if (raw) {
-        const parsed = JSON.parse(raw) as EscrowType[];
-        if (Array.isArray(parsed)) {
-          setArchivedEscrows(parsed);
-        }
-      }
-    } catch {
-      // ignore errors, start with empty archive
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ARCHIVED_STORAGE_KEY]);
+  // useEffect(() => {
+  //   try {
+  //     const raw = typeof window !== "undefined" ? window.localStorage.getItem(ARCHIVED_STORAGE_KEY) : null;
+  //     if (raw) {
+  //       const parsed = JSON.parse(raw) as EscrowType[];
+  //       if (Array.isArray(parsed)) {
+  //         setArchivedEscrows(parsed);
+  //       }
+  //     }
+  //   } catch {
+  //     // ignore errors, start with empty archive
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [ARCHIVED_STORAGE_KEY]);
 
   // Persist to localStorage whenever escrows change
-  useEffect(() => {
-    try {
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(escrows));
-      }
-    } catch {
-      // ignore persistence errors
-    }
-  }, [escrows, STORAGE_KEY]);
+  // useEffect(() => {
+  //   try {
+  //     if (typeof window !== "undefined") {
+  //       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(escrows));
+  //     }
+  //   } catch {
+  //     // ignore persistence errors
+  //   }
+  // }, [escrows, STORAGE_KEY]);
 
   // Persist archived escrows to localStorage
-  useEffect(() => {
-    try {
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(ARCHIVED_STORAGE_KEY, JSON.stringify(archivedEscrows));
-      }
-    } catch {
-      // ignore persistence errors
-    }
-  }, [archivedEscrows, ARCHIVED_STORAGE_KEY]);
+  // useEffect(() => {
+  //   try {
+  //     if (typeof window !== "undefined") {
+  //       window.localStorage.setItem(ARCHIVED_STORAGE_KEY, JSON.stringify(archivedEscrows));
+  //     }
+  //   } catch {
+  //     // ignore persistence errors
+  //   }
+  // }, [archivedEscrows, ARCHIVED_STORAGE_KEY]);
 
   const addEscrow = (e: EscrowType) => setEscrows((s) => [e, ...s]);
 

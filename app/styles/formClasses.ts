@@ -1,7 +1,7 @@
 // Centralized class names for form styling
 export const fieldLabel = "font-semibold mb-1";
 export const fieldWrapper = "flex flex-col";
-export const inputClass = "bg-background p-2 rounded-xl";
+export const inputClass = "bg-[#EEE] p-2 rounded-xl";
 export const textareaClass = "border p-2 rounded h-24";
 export const selectClass = "border p-2 rounded";
 export const formGrid = "grid grid-cols-2 gap-8";
