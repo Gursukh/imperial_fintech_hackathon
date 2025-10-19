@@ -172,7 +172,7 @@ export default function CreatePanel() {
 
 
                 <div className={boxWrapper}>
-                    <h2 className="text-2xl font-semibold mb-4 col-span-2">Yeild Management</h2>
+                    <h2 className="text-2xl font-semibold mb-4 col-span-2">Yield Management</h2>
                     <div className="flex items-center justify-between w-full col-span-2">
                         <label className={fieldWrapper}>
                             <span className={fieldLabel}>Enable Vault Address</span>
